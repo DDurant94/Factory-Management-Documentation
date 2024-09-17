@@ -1,0 +1,1106 @@
+swagger: '2.0'
+info:
+  title: "Factory Management API"
+  description: "This is an API to manage an E-Commerce application"
+  version: "1.0.4"
+host: "127.0.0.1:5000"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+paths: 
+  /customers/:
+    get:
+      tags:
+        - customers
+      summary: "Get All Customers Endpoint"
+      description: "Retrieve a list of all customers"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Customer"
+        401:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "token is missing | token has expired | invalid token"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "User does not have required role"
+      security:
+      - bearerAuth: []
+
+  /customers/add-customer:
+    post:
+      tags:
+        - "customers"
+      summary: "Add a Customers Endpoint"
+      description: "Add a new Customer"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Customer data"
+          required: true
+          schema:
+            $ref: "#/definitions/CustomerCredentials"
+      responses:
+        201:
+          description: "Successful response"
+          schema:
+            items:
+              $ref: "#/definitions/Customer"
+        400:
+          description: "Validation Error | Fallback Error"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "Unknown field. Missing data for required field. | Fallback method error activated"
+
+  /customers/customer-lifetime-value:
+    get:
+      tags:
+        - customers
+      summary: "Get All Customers Life Time Value Spent Endpoint"
+      description: "Retrieve a list of all customers with a life time value spent with the company valuing at more than $500"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/CustomerValueResponse"
+        401:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "token is missing | token has expired | invalid token"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "User does not have required role"
+      security:
+      - bearerAuth: []
+
+  /products/:
+    get:
+      tags:
+        - "products"
+      summary: "Get All Products Endpoint"
+      description: "Retrieve a list of all products"
+      parameters:
+        - name: "page"
+          in: "query"
+          description: "Page number"
+          required: false
+          type: "integer"
+          default: 1
+        - name: "per_page"
+          in: "query"
+          description: "Number of items per page"
+          required: false
+          type: "integer"
+          default: 10
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Product"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "token is missing | token has expired | invalid token"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "User does not have required role"
+
+  /products/add-product:
+    post:
+      tags:
+        - "products"
+      summary: "Add a New Product Endpoint"
+      description: "Add a new product"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Product data"
+          required: true
+          schema:
+            $ref: "#/definitions/ProductCredentials"
+      responses:
+        201:
+          description: "Product created successfully"
+          schema:
+            $ref: "#/definitions/Product"
+        400:
+          description: "Validation Error"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "Unknown field. Missing data for required field."
+      security:
+        - bearerAuth: []
+        - roleAuth: ['admin']
+
+  /products/top-selling:
+    get:
+      tags:
+        - "products"
+      summary: "Get Top Selling Product Endpoint"
+      description: "Retrieve the top selling product"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/ProductTopSellingProductsResponse"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "token is missing | token has expired | invalid token"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "User does not have required role"
+
+  /employees/:
+    get:
+      tags:
+        - "employees"
+      summary: "Get All Employees Endpoint"
+      description: "Retrieve a list of all employees"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Employee"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "token is missing | token has expired | invalid token"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "User does not have required role"
+      security:
+        - bearerAuth: []
+        - roleAuth: 'admin'
+  
+  /employees/add-employee:
+    post:
+      tags:
+        - "employees"
+      summary: "Add a New Employee Endpoint"
+      description: "Add a new employee"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Employee data"
+          required: true
+          schema:
+            $ref: "#/definitions/EmployeeCredentials"
+      responses:
+        201:
+          description: "Employee created successfully"
+          schema:
+            $ref: "#/definitions/Employee"
+        400:
+          description: "Validation Error | Fallback Error"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "Unknown field. Missing data for required field. | Fallback method error activated"
+      security:
+        - bearerAuth: []
+        - roleAuth: ['admin']
+
+  /employees/production-report:
+    get:
+      tags:
+        - "employees"
+      summary: "Get Employee Production Analyses Endpoint"
+      description: "Retrieve employee production analyses"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/EmployeeProductionReportResponse"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "token is missing | token has expired | invalid token"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "User does not have required role"
+      security:
+        - bearerAuth: []
+        - roleAuth: ['admin']
+
+  /orders/:
+    get:
+      tags:
+        - "orders"
+      summary: "Get All Orders Endpoint"
+      description: "Retrieve a list of all orders"
+      parameters:
+        - name: "page"
+          in: "query"
+          description: "Page number"
+          required: false
+          type: "integer"
+          default: 1
+        - name: "per_page"
+          in: "query"
+          description: "Number of items per page"
+          required: false
+          type: "integer"
+          default: 10
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/OrdersResponse"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "token is missing | token has expired | invalid token"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "User does not have required role"
+      security:
+        - bearerAuth: []
+        - roleAuth: ['admin']
+
+  /orders/add-order:
+    post:
+      tags:
+        - "orders"
+      summary: "Add a New Order Endpoint"
+      description: "Add a new order"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Order data"
+          required: true
+          schema:
+            $ref: "#/definitions/OrderCredentials"
+      responses:
+        201:
+          description: "Order created successfully"
+          schema:
+            $ref: "#/definitions/OrdersResponse"
+        400:
+          description: "Validation Error"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "Unknown field. Missing data for required field."
+
+  /production/all-production:
+    get:
+      tags:
+        - "production"
+      summary: "Get All Production Records Endpoint"
+      description: "Retrieve a list of all production records"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Production"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "token is missing | token has expired | invalid token"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "User does not have required role"
+      security:
+        - bearerAuth: []
+        - roleAuth: ['admin']
+
+  /production/add-production-product:
+    post:
+      tags:
+        - "production"
+      summary: "Add a New Production Record Endpoint"
+      description: "Add a new production record"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Production data"
+          required: true
+          schema:
+            $ref: "#/definitions/ProductionCredentials"
+      responses:
+        201:
+          description: "Production record created successfully"
+          schema:
+            $ref: "#/definitions/Production"
+        400:
+          description: "Validation Error"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "Unknown field. Missing data for required field."
+      security:
+        - bearerAuth: []
+        - roleAuth: ['admin']
+
+  /production/production-by-date/{date}:
+    get:
+      tags:
+        - "production"
+      summary: "Get Production Records by Date Endpoint"
+      description: "Retrieve production records for a specific date"
+      parameters:
+        - name: "date"
+          in: "path"
+          description: "Date for which to retrieve production records"
+          required: true
+          type: "string"
+          format: "date"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ProductionByDateResponse"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "token is missing | token has expired | invalid token"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "User does not have required role"
+      security:
+        - bearerAuth: []
+        - roleAuth: ['admin']
+
+  /roles/:
+    get:
+      tags:
+        - "roles"
+      summary: "Get All Roles Endpoint"
+      description: "Retrieve a list of all roles"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Role"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "token is missing | token has expired | invalid token"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "User does not have required role"
+      security:
+        - bearerAuth: []
+        - roleAuth: ['admin']
+  
+  /roles/add-role:
+    post:
+      tags:
+        - "roles"
+      summary: "Add a New Role Endpoint"
+      description: "Add a new role"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Role data"
+          required: true
+          schema:
+            $ref: "#/definitions/RoleCredentials"
+      responses:
+        201:
+          description: "Role created successfully"
+          schema:
+            $ref: "#/definitions/Role"
+        400:
+          description: "Validation Error"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "Unknown field. Missing data for required field."
+      security:
+        - bearerAuth: []
+        - roleAuth: ['admin']
+
+  /users/:
+    get:
+      tags:
+        - "users"
+      summary: "Get All Users"
+      description: "Retrieve a list of all users"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "token is missing | token has expired | invalid token"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "User does not have required role"
+      security:
+        - bearerAuth: []
+        - roleAuth: ['admin']
+
+  /users/add-user:
+    post:
+      tags:
+        - "users"
+      summary: "Add a New User"
+      description: "Add a new user"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User data"
+          required: true
+          schema:
+            $ref: "#/definitions/UserCredentials"
+      responses:
+        201:
+          description: "User created successfully"
+          schema:
+            $ref: "#/definitions/User"
+        400:
+          description: "Validation Error"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "Unknown field. Missing data for required field."
+      security:
+        - bearerAuth: []
+        - roleAuth: ['admin']
+
+  /users/login:
+    post:
+      tags:
+        - "users"
+      summary: "Login Endpoint"
+      description: "Endpoint for user authentication."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Credentials for login"
+          required: true
+          schema:
+            $ref: "#/definitions/LoginCredentials"
+      responses:
+        200:
+          description: "Login successful"
+          schema:
+            $ref: "#/definitions/LoginResponse"
+          examples:
+            application/json:
+              value:
+                auth_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                message: "Login successful"
+                status: "success"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "Invalid credentials"
+
+
+definitions:
+  Customer:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "customer's name"
+      email:
+        type: "string"
+        description: "customer's email"
+      phone:
+        type: "string"
+        description: "customer's phone"
+      id:
+        type: "integer"
+        format: "int64"
+        description: "Customer's unique ID"
+    required:
+      - "name"
+      - "email"
+      - "phone"
+      - "id"
+
+  Product:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "products name"
+      price:
+        type: "number"
+        format: "float"
+        description: "price of the product"
+      quantity:
+        type: "integer"
+        format: "int64"
+        description: "amount of the product that is available"
+      id:
+        type: "integer"
+        format: "int64"
+        description: "Products unique ID"
+    required:
+      - "name"
+      - "price"
+      - "quantity"
+      - "id"
+
+  Employee:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "employee's name"
+      position:
+        type: "string"
+        description: "the position where the employee works"       
+      id:
+        type: "integer"
+        format: "int64"
+        description: "Employee's unique ID"
+    required:
+      - "name"
+      - "position"
+      - "id"
+
+  Production:
+    type: "object"
+    properties:
+      product_id:
+        type: "integer"
+        format: "int64"
+        description: "Products unique ID"
+      employee_id:
+        format: "int64"
+        description: "Employee's unique ID"
+      quantity:
+        type: "integer"
+        format: "int64"
+        description: "amount of the product that is produced"
+      date:
+        type: "string"
+        form: "date"
+        example: "2024-01-01"
+        description: "The date of the product was produced"
+      id:
+        type: "integer"
+        format: "int64"
+        description: "Production's unique ID"
+    required:
+      - "product_id"
+      - "employee_id"
+      - "quantity"
+      - "date"
+      - "id"
+
+  Order:
+    type: "object"
+    properties:
+      customer_id:
+        type: "integer"
+        format: "int64"
+        definition: "Customer's unique ID"
+      date:
+        type: "string"
+        format: "date"
+        example: "2024-01-01"
+      products:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            product_id:
+              type: "integer"
+              format: "int64"
+              description: "Products unique ID"
+            quantity:
+              type: "integer"
+              format: "int64"
+              description: "amount of the product the customer wants to order"
+      id:
+        type: "integer"
+        format: "int64"
+        description: "Order's unique ID"
+
+    required:
+      - customer_id
+      - date
+      - products
+      - "id"
+
+  Role:
+    type: "object"
+    properties:
+      role_name:
+        type: "string"
+        description: "name of the role"
+      id:
+        type: "integer"
+        description: "Role's unique ID"
+    required:
+      - "role_name"
+      - "id"
+
+  User:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+        description: "name to be used for login"
+      password:
+        type: "string"
+        format: "password"
+        description: "password to be used for login"
+      role:
+        type: "string"
+        description: "role of the user to allow access to various endpoints"
+      id:
+        type: "integer"
+        format: "int64"
+        description: "Role's unique ID" 
+    required:
+      - "username"
+      - "password"
+      - "id"
+
+  CustomerCredentials:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "name"
+      email:
+        type: "string"
+        description: "customer's email"
+      phone:
+        type: "string"
+        description: "customer's phone"
+    required:
+      - "name"
+      - "email"
+      - "phone"
+
+  CustomerValueResponse:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Name of Customer"
+      value:
+        type: "number"
+        format: "float"
+        description: "total amount customer has spent"
+    required:
+      - "name"
+      - "value"
+
+  ProductCredentials:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "products name"
+      price:
+        type: "number"
+        format: "float"
+        description: "price of the product"
+      quantity:
+        type: "integer"
+        format: "int64"
+        description: "amount of the product that is available"
+    required:
+      - "name"
+      - "price"
+      - "quantity"
+
+  ProductTopSellingProductsResponse:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "name of product"
+      price:
+        type: "number"
+        format: "float" 
+        description: "cost of product" 
+      total_sold:
+        type: "integer"
+        format: "int64"
+        description: "total sold"
+    required:
+      - "name"
+      - "price"
+      - "total_sold"
+
+  EmployeeCredentials:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "employee's name"
+      position:
+        type: "string"
+        description: "the position where the employee works"       
+    required:
+      - "name"
+      - "position"
+
+  EmployeeProductionReportResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        description: "Employee's unique ID"
+      name:
+        type: "string"
+        description: "name of employee"
+      position:
+        type: "string"
+        description: "position the employee holds"
+      total_produced:
+        type: "integer"
+        format: "int64"
+        description: "employees lifetime production"
+    required:
+      - "id"
+      - "name"
+      - "position"
+      - "total produced"
+
+  ProductionCredentials:
+    type: "object"
+    properties:
+      product_id:
+        type: "integer"
+        format: "int64"
+        description: "Products unique ID"
+      employee_id:
+        type: "integer"
+        format: "int64"
+        description: "Employee's unique ID"
+      quantity:
+        type: "integer"
+        format: "int64"
+        description: "amount of the product that is produced"
+      date:
+        type: "string"
+        form: "date"
+        example: "2024-01-01"
+        description: "The date of the product was produced"
+    required:
+      - "product_id"
+      - "employee_id"
+      - "quantity"
+      - "date"
+
+  ProductionByDateResponse:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Name of product"
+      total_produced:
+        type: "integer"
+        description: "total number produced that day"
+    required:
+      - "name"
+      - "total_produced"
+
+  OrderCredentials:
+    type: "object"
+    properties:
+      customer_id:
+        type: "integer"
+        format: "int64"
+        definition: "Customer's unique ID"
+      date:
+        type: "string"
+        format: "date"
+        example: "2024-01-01"
+      products:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            product_id:
+              type: "integer"
+              format: "int64"
+              description: "Products unique ID"
+            quantity:
+              type: "integer"
+              format: "int64"
+              description: "amount of the product the customer wants to order"
+    required:
+      - customer_id
+      - date
+      - products
+
+  OrdersResponse:
+    type: "object"
+    properties:
+      customer_id:
+        type: "integer"
+        format: "int64"
+      date:
+        type: "string"
+        format: "date"
+        example: "2024-01-01"
+      id:
+        type: "integer"
+        format: "int64"
+      products:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            product:
+              $ref: "#/definitions/ProductCredentials"
+            product_id:
+              type: "integer"
+              format: "int64"
+            quantity:
+              type: "integer"
+              format: "int64"
+
+  RoleCredentials:
+    type: "object"
+    properties:
+      role_name:
+        type: "string"
+        description: "name of the role"
+    required:
+      - "role_name"
+
+  UserCredentials:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+        description: "name to be used for login"
+      password:
+        type: "string"
+        format: "password"
+        description: "password to be used for login"
+      role:
+        type: "string"
+        description: "role of the user to allow access to various endpoints"
+    required:
+      - "username"
+      - "password"
+
+  LoginCredentials:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+        description: "username"
+      password:
+        type: "string"
+        format: "password"
+        description: "Password"
+    required:
+      - "username"
+      - "password"
+
+  LoginResponse:
+    type: "object"
+    properties: 
+      auth_token:
+        type: "string"
+        description: "Authentication token"
+      message:
+        type: "string"
+        description: "Message indicating success or failure"
+      status: 
+        type: "string"
+        description: "Status of the operation"
+    required:
+      - "auth_token"
+      - "message"
+
+  Error:
+    type: "object"
+    properties:
+      status:
+        type: "string"
+        description: "Status of the error"
+      message:
+        type: "string"
+        description: "Description of the error"
+    required:
+      - "status"
+      - "message"
