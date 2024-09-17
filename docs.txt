@@ -144,7 +144,7 @@ About:
 PIP Installs:
     Refer to requirements.txt
     You can also run this code in the terminal after you create a virtual environment.
-    ("pip install Flask SQLAlchemy marshmallow flask-marshmallow Flask-SQLAlchemy Flask-Caching mysql-connector-python marshmallow-sqlalchemy circuitbreaker Flask-Limiter flask-cors pyjwt python-dotenv Faker pytest pytest-mock requests")
+    ("pip install Flask SQLAlchemy marshmallow flask-marshmallow Flask-SQLAlchemy Flask-Caching mysql-connector-python marshmallow-sqlalchemy circuitbreaker Flask-Limiter flask-cors pyjwt python-dotenv Faker pytest pytest-mock requests flask-swagger flask-swagger-ui")
 
 Questions:
     Implementing Swagger Documentation for Factory Management System API
