@@ -252,7 +252,7 @@ paths:
                 message: "User does not have required role"
       security:
         - bearerAuth: []
-        - roleAuth: 'admin'
+        - roleAuth: ['admin']
   
   /employees/add-employee:
     post:
@@ -752,7 +752,7 @@ definitions:
         description: "amount of the product that is produced"
       date:
         type: "string"
-        form: "date"
+        format: "date"
         example: "2024-01-01"
         description: "The date of the product was produced"
       id:
@@ -772,7 +772,7 @@ definitions:
       customer_id:
         type: "integer"
         format: "int64"
-        definition: "Customer's unique ID"
+        description: "Customer's unique ID"
       date:
         type: "string"
         format: "date"
@@ -958,7 +958,7 @@ definitions:
         description: "amount of the product that is produced"
       date:
         type: "string"
-        form: "date"
+        format: "date"
         example: "2024-01-01"
         description: "The date of the product was produced"
     required:
@@ -986,7 +986,7 @@ definitions:
       customer_id:
         type: "integer"
         format: "int64"
-        definition: "Customer's unique ID"
+        description: "Customer's unique ID"
       date:
         type: "string"
         format: "date"

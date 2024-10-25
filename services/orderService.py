@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select,Subquery
+from sqlalchemy import select
 from database import db
 
 from models.order import Order
